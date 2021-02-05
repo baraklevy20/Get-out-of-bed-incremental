@@ -20,7 +20,7 @@ const tabs = {
 const updateStyles = () => {
   if (game.style < 1 && game.upgrades.declutter.bought) {
     game.style = 1;
-    switchTab('activities');
+    switchTab('upgrades');
   }
 };
 
@@ -75,6 +75,10 @@ const updateTabs = () => {
     if (tabs[tabName].unlockCondition()) {
       tabs[tabName].unlocked = true;
       document.getElementById(`${tabName}Button${game.style}`).style = 'display: block';
+
+      if (game.style === 0) {
+        document.getElementById(`${tabName}`).style = 'display: block';
+      }
     }
   });
 };
@@ -103,7 +107,7 @@ const loadGame = () => {
 const init = () => {
   loadGame();
   setInterval(gameLoop, 200);
-  setInterval(saveGame, 30000);
+  // setInterval(saveGame, 30000);
 
   if (game.style === 1) {
     switchTab('activities');

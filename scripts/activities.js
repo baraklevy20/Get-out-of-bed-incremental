@@ -1,7 +1,6 @@
 game.activities = {
   get_out_of_bed: {
     label: 'Get out of bed',
-    motivationNeeded: 0,
     on: false,
     progress: 0,
     attempts: 0,
@@ -10,16 +9,16 @@ game.activities = {
     reward: 8,
     loss: 1,
   },
-  // make_breakfast: {
-  //   label: 'Make breakfast',
-  //   motivationNeeded: 12,
-  //   on: false,
-  //   progress: 0,
-  //   progressToComplete: 200,
-  //   baseSuccessRate: 0.5,
-  //   reward: 5,
-  //   loss: 1,
-  // },
+  make_breakfast: {
+    label: 'Make breakfast',
+    on: false,
+    progress: 0,
+    progressToComplete: 200,
+    baseSuccessRate: 0.5,
+    upgradesToUnlock: ['make_breakfast'],
+    reward: 5,
+    loss: 1,
+  },
   // todo add shower, talk to a friend
 };
 
@@ -32,12 +31,18 @@ const renderActivity = (activityName, activity) => `
     </div>
       `;
 
+const canUnlockActivity = (activity) => {
+  const requiredUpgrades = activity.upgradesToUnlock || [];
+  const requiredMotivation = activity.motivationToUnlock || 0;
+  return game.motivation >= requiredMotivation && requiredUpgrades.every((u) => game.upgrades[u].bought);
+};
+
 const updateActivities = (diff) => {
   const activitiesDiv = document.getElementById('activities');
 
   Object.keys(game.activities).forEach((activityName) => {
     const activity = game.activities[activityName];
-    if (!activity.rendered && game.motivation >= activity.motivationNeeded) {
+    if (!activity.rendered && canUnlockActivity(activity)) {
       activity.rendered = true;
       activitiesDiv.innerHTML += renderActivity(activityName, activity);
     }
