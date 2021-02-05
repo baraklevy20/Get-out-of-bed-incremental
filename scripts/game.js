@@ -1,17 +1,27 @@
 let lastUpdate;
 // eslint-disable-next-line prefer-const
-let motivation = 100;
+let motivation = 1000;
+
+// eslint-disable-next-line prefer-const
+let style = 0;
 
 const tabs = {
   activities: {
     unlockCondition: () => true,
   },
   upgrades: {
-    unlockCondition: () => motivation >= upgrades.motivationalQuote.motivationToUnlock,
+    unlockCondition: () => true,
   },
   habits: {
     unlockCondition: () => upgrades.habitOutOfBed.bought,
   },
+};
+
+const updateStyles = () => {
+  if (style < 1 && upgrades.declutter.bought) {
+    style = 1;
+    switchTab('activities');
+  }
 };
 
 const update = (diff) => {
@@ -19,6 +29,7 @@ const update = (diff) => {
   updateActivities(diff);
   updateUpgrades();
   updateHabits(diff);
+  updateStyles();
 
   if (motivation <= 0) {
     console.log("You can't take it anymore. Restart?");
@@ -45,17 +56,35 @@ const switchTab = (tab) => {
 };
 
 const updateTabs = () => {
+  // Hide previous styles
+  // todo change it to everything other than the current style
+  if (style === 1) {
+    const style0Elements = document.getElementsByClassName('style0');
+    for (const e of style0Elements) {
+      e.style = 'display: none';
+    }
+  } else if (style === 0) {
+    const style1Elements = document.getElementsByClassName('style1');
+    for (const e of style1Elements) {
+      e.style = 'display: none';
+    }
+  }
+
+  // Unlock buttons
   Object.keys(tabs).forEach((tabName) => {
-    if (!tabs[tabName].unlocked && tabs[tabName].unlockCondition()) {
+    if (tabs[tabName].unlockCondition()) {
       tabs[tabName].unlocked = true;
-      document.getElementById(`${tabName}Button`).style = 'display: block';
+      document.getElementById(`${tabName}Button${style}`).style = 'display: block';
     }
   });
 };
 
 const init = () => {
   setInterval(gameLoop, 200);
-  switchTab('activities');
+
+  if (style === 1) {
+    switchTab('activities');
+  }
 };
 
 $(document).ready(init);

@@ -4,31 +4,26 @@ const activities = {
     motivationNeeded: 0,
     on: false,
     progress: 0,
+    attempts: 0,
     progressToComplete: 50,
-    baseSuccessRate: 0.5,
-    reward: 3,
+    baseSuccessRate: 0.4,
+    reward: 8,
     loss: 1,
   },
-  make_breakfast: {
-    label: 'Make breakfast',
-    motivationNeeded: 12,
-    on: false,
-    progress: 0,
-    progressToComplete: 200,
-    baseSuccessRate: 0.5,
-    reward: 5,
-    loss: 1,
-  },
+  // make_breakfast: {
+  //   label: 'Make breakfast',
+  //   motivationNeeded: 12,
+  //   on: false,
+  //   progress: 0,
+  //   progressToComplete: 200,
+  //   baseSuccessRate: 0.5,
+  //   reward: 5,
+  //   loss: 1,
+  // },
   // todo add shower, talk to a friend
 };
 
-const updateActivities = (diff) => {
-  const activitiesDiv = document.getElementById('activities');
-  Object.keys(activities).forEach((activityName) => {
-    const activity = activities[activityName];
-    if (!activity.unlocked && motivation >= activity.motivationNeeded) {
-      activity.unlocked = true;
-      activitiesDiv.innerHTML += `
+const renderActivity = (activityName, activity) => `
       <div>
       <label for="file">${activity.label}:</label>
       <progress id="${activityName}Progress" value="0" max="${activity.progressToComplete}"></progress>
@@ -36,6 +31,15 @@ const updateActivities = (diff) => {
       <span id="${activityName}Success"></span>
     </div>
       `;
+
+const updateActivities = (diff) => {
+  const activitiesDiv = document.getElementById('activities');
+
+  Object.keys(activities).forEach((activityName) => {
+    const activity = activities[activityName];
+    if (!activity.unlocked && motivation >= activity.motivationNeeded) {
+      activity.unlocked = true;
+      activitiesDiv.innerHTML += renderActivity(activityName, activity);
     }
 
     if (activity.on) {
@@ -44,6 +48,7 @@ const updateActivities = (diff) => {
 
       if (activity.progress > activity.progressToComplete) {
         activity.progress = 0;
+        activity.attempts += 1;
         changeActivityStatus(activityName, false);
 
         const successfulAttempt = Math.random() < getActivitySuccessRate(activityName);
@@ -61,6 +66,10 @@ const updateActivities = (diff) => {
 };
 
 const getActivitySuccessRate = (activityName) => {
+  if (activities[activityName].attempts === 1) {
+    return 0;
+  }
+
   let successRate = activities[activityName].baseSuccessRate;
 
   Object.values(upgrades).forEach((upgrade) => {
