@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="scripts/game.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Get out of bed incremental</title>
+</head>
+<body>
+  <h3>Motivation: <span id="motivation"></span></h3>
+  <button id="activitiesButton" onclick="switchTab('activities')" style="display: none">Activities</button>
+  <button id="upgradesButton"  onclick="switchTab('upgrades')" style="display: none">Motivational Boosts</button>
+  <button id="habitsButton"  onclick="switchTab('habits')" style="display: none">Habits</button>
+  <div id="activities" style="display: none"></div>
+  <div id="upgrades" style="display: none"></div>
+  <div id="habits" style="display: none"></div>
+</body>
+</html>
