@@ -1,4 +1,4 @@
-const habits = {
+game.habits = {
   habitOutOfBed: {
     label: 'Out of Bed',
     interval: 2000,
@@ -16,16 +16,16 @@ const renderHabit = (habit) => `
 
 const updateHabits = (diff) => {
   const div = document.getElementById('habits');
-  Object.keys(habits).forEach((habitsName) => {
-    const habit = habits[habitsName];
+  Object.keys(game.habits).forEach((habitsName) => {
+    const habit = game.habits[habitsName];
 
-    if (upgrades[habitsName].bought) {
+    if (game.upgrades[habitsName].bought) {
       habit.unlocked = true;
       habit.ticks += diff;
 
       if (habit.ticks >= habit.interval) {
         habit.ticks = 0;
-        if (!activities[habit.activityName].on) {
+        if (!game.activities[habit.activityName].on) {
           attemptActivity(habit.activityName);
         }
       }

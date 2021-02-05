@@ -1,8 +1,8 @@
-const upgrades = {
+game.upgrades = {
   motivationalQuote: {
     label: 'Motivational quote',
     desc: "I don't think it's going to help",
-    effect: `Increase [${activities.get_out_of_bed.label}] base success rate by 1%.`,
+    effect: `Increase [${game.activities.get_out_of_bed.label}] base success rate by 1%.`,
     price: 5,
     motivationToUnlock: 0,
     value: 0.01,
@@ -12,7 +12,7 @@ const upgrades = {
   motivationalQuote1: {
     label: 'Another motivational quote',
     desc: "It's not helping",
-    effect: `Increase [${activities.get_out_of_bed.label}] base success rate by 2%`,
+    effect: `Increase [${game.activities.get_out_of_bed.label}] base success rate by 2%`,
     price: 7,
     upgradesToUnlock: ['motivationalQuote'],
     value: 0.02,
@@ -22,14 +22,14 @@ const upgrades = {
   habitOutOfBed: {
     label: 'A reddit comment about habits',
     desc: "I'll try to implement a habit of getting out of bed. I hope I can stick to it...",
-    effect: `Unlock [${activities.get_out_of_bed.label}] habit.`,
+    effect: `Unlock [${game.activities.get_out_of_bed.label}] habit.`,
     price: 15,
     motivationToUnlock: 0,
   },
   motivationalQuote2: {
     label: 'A third motivational quote',
     desc: "These motivational quotes are useless, I'm gonna take a break",
-    effect: `Increase [${activities.get_out_of_bed.label}] base success rate by 2%.`,
+    effect: `Increase [${game.activities.get_out_of_bed.label}] base success rate by 2%.`,
     price: 20,
     upgradesToUnlock: ['motivationalQuote1'],
     value: 0.02,
@@ -39,7 +39,7 @@ const upgrades = {
   motivationalQuote3: {
     label: 'A decent motivational quote',
     desc: "I'm too tired to look for motivational quotes...",
-    effect: `Increase [${activities.get_out_of_bed.label}] base success rate by 5%`,
+    effect: `Increase [${game.activities.get_out_of_bed.label}] base success rate by 5%`,
     price: 100,
     upgradesToUnlock: ['motivationalQuote2'],
     value: 0.05,
@@ -49,7 +49,7 @@ const upgrades = {
   declutter: {
     label: 'Declutter',
     desc: "I've read that decluttering might make me feel better...",
-    effect: `Increase [${activities.get_out_of_bed.label}] reward by 5%. Also improves UI.`,
+    effect: `Increase [${game.activities.get_out_of_bed.label}] reward by 5%. Also improves UI.`,
     price: 300,
     value: 0.05,
     activity: 'get_out_of_bed',
@@ -70,31 +70,34 @@ const renderUpgrade = (upgrade, upgradeName) => `
 const canUnlockUpgrade = (upgrade) => {
   const requiredUpgrades = upgrade.upgradesToUnlock || [];
   const requiredMotivation = upgrade.motivationToUnlock || 0;
-  return motivation >= requiredMotivation && requiredUpgrades.every((u) => upgrades[u].bought);
+  return game.motivation >= requiredMotivation && requiredUpgrades.every((u) => game.upgrades[u].bought);
 };
 const updateUpgrades = () => {
   const div = document.getElementById('upgrades');
-  Object.keys(upgrades).forEach((upgradeName) => {
-    const upgrade = upgrades[upgradeName];
+  Object.keys(game.upgrades).forEach((upgradeName) => {
+    const upgrade = game.upgrades[upgradeName];
     if (!upgrade.unlocked && canUnlockUpgrade(upgrade)) {
       upgrade.unlocked = true;
+    }
+    if (upgrade.unlocked && !upgrade.bought && !upgrade.rendered) {
+      upgrade.rendered = true;
       div.innerHTML += renderUpgrade(upgrade, upgradeName);
     }
 
-    if (upgrade.unlocked) {
+    if (upgrade.unlocked && !upgrade.bought) {
       document.getElementById(`buy${upgradeName}`).disabled = !canBuyUpgrade(upgradeName);
     }
   });
 };
 
-const canBuyUpgrade = (upgradeName) => !upgrades[upgradeName].bought
-  && motivation >= upgrades[upgradeName].price;
+const canBuyUpgrade = (upgradeName) => !game.upgrades[upgradeName].bought
+  && game.motivation >= game.upgrades[upgradeName].price;
 
 // eslint-disable-next-line no-unused-vars
 const buyUpgrade = (upgradeName) => {
   if (canBuyUpgrade(upgradeName)) {
-    motivation -= upgrades[upgradeName].price;
-    upgrades[upgradeName].bought = true;
+    game.motivation -= game.upgrades[upgradeName].price;
+    game.upgrades[upgradeName].bought = true;
     document.getElementById(`buyUpgradeDiv${upgradeName}`).style = 'display: none';
   }
 };

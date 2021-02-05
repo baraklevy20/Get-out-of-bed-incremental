@@ -1,4 +1,4 @@
-const activities = {
+game.activities = {
   get_out_of_bed: {
     label: 'Get out of bed',
     motivationNeeded: 0,
@@ -35,16 +35,16 @@ const renderActivity = (activityName, activity) => `
 const updateActivities = (diff) => {
   const activitiesDiv = document.getElementById('activities');
 
-  Object.keys(activities).forEach((activityName) => {
-    const activity = activities[activityName];
-    if (!activity.unlocked && motivation >= activity.motivationNeeded) {
-      activity.unlocked = true;
+  Object.keys(game.activities).forEach((activityName) => {
+    const activity = game.activities[activityName];
+    if (!activity.rendered && game.motivation >= activity.motivationNeeded) {
+      activity.rendered = true;
       activitiesDiv.innerHTML += renderActivity(activityName, activity);
     }
 
     if (activity.on) {
       activity.progress += diff / 1000 * 10;
-      motivation -= diff / 1000 * 0.1;
+      game.motivation -= diff / 1000 * 0.1;
 
       if (activity.progress > activity.progressToComplete) {
         activity.progress = 0;
@@ -54,10 +54,10 @@ const updateActivities = (diff) => {
         const successfulAttempt = Math.random() < getActivitySuccessRate(activityName);
         if (successfulAttempt) {
           document.getElementById(`${activityName}Success`).innerText = 'I finally made it..';
-          motivation += activity.reward;
+          game.motivation += activity.reward;
         } else {
           document.getElementById(`${activityName}Success`).innerText = 'I couldn\'t make it...';
-          motivation -= activity.loss;
+          game.motivation -= activity.loss;
         }
       }
       document.getElementById(`${activityName}Progress`).value = activity.progress;
@@ -66,13 +66,13 @@ const updateActivities = (diff) => {
 };
 
 const getActivitySuccessRate = (activityName) => {
-  if (activities[activityName].attempts === 1) {
+  if (game.activities[activityName].attempts === 1) {
     return 0;
   }
 
-  let successRate = activities[activityName].baseSuccessRate;
+  let successRate = game.activities[activityName].baseSuccessRate;
 
-  Object.values(upgrades).forEach((upgrade) => {
+  Object.values(game.upgrades).forEach((upgrade) => {
     if (upgrade.bought) {
       if (upgrade.type === 'successRate') {
         if (activityName === upgrade.activity) {
@@ -86,8 +86,8 @@ const getActivitySuccessRate = (activityName) => {
 };
 
 const changeActivityStatus = (activityName, status) => {
-  activities[activityName].on = status;
-  if (activities[activityName].on) {
+  game.activities[activityName].on = status;
+  if (game.activities[activityName].on) {
     document.getElementById(`attempt${activityName}`).innerText = 'Stop trying';
   } else {
     document.getElementById(`attempt${activityName}`).innerText = 'Attempt';
@@ -96,6 +96,6 @@ const changeActivityStatus = (activityName, status) => {
 
 // eslint-disable-next-line no-unused-vars
 const attemptActivity = (activityName) => {
-  const activity = activities[activityName];
+  const activity = game.activities[activityName];
   changeActivityStatus(activityName, !activity.on);
 };
